@@ -18,7 +18,7 @@ program
   .action((name) => {
     //p.intro(`${color.bgCyan(color.black(' testpilot-cli '))}`);
     p.log.step(`Hello, ${color.cyan(name)}!`);
-    p.outro(color.green('Greeted successfully.'));
+    p.outro(color.green('Command completed.'));
   });
 
 program
@@ -28,7 +28,7 @@ program
   .action((name) => {
     //p.intro(`${color.bgCyan(color.black(' testpilot-cli '))}`);
     p.log.step(`Goodbye, ${color.cyan(name)}!`);
-    p.outro(color.green('Said goodbye successfully.'));
+    p.outro(color.green('Command completed.'));
   });
 
 program.parse();
