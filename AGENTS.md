@@ -18,7 +18,7 @@ This project is built to be "Agent-First." These guidelines help AI coding assis
 
 1.  **Aesthetics Matter**: ALL UI elements must look premium, modern, and high-fidelity. No placeholders. Use full-color palettes, smooth transitions, and rich typography.
 2.  **Safety First**: Never run destructive commands without double-checking context.
-3.  **Conventionality**: Follow the repository's `CONVENTIONAL_COMMITS.md` for all commits.
+3.  **Conventionality**: Follow the Conventional Commits specification below for all commits.
 4.  **No Placeholders**: If you need an image, generate it. If you need a component, build it fully with logic.
 
 ## Developing for the Agent Loop
@@ -36,8 +36,42 @@ The `apps/api/app/services/agent.py` file is the brain of the system.
 - Ensure cross-repo compatibility (if changing the API, update `web` and `cli`).
 
 ### 2. Commit Message Structure
-Follow the format: `type(scope): description`
-Scopes: `api`, `web`, `cli`, `core`
+
+This project follows the [Conventional Commits](https://www.conventionalcommits.org/) specification.
+
+**Format:**
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+**Types:**
+| Type | Description | Example |
+| :--- | :--- | :--- |
+| **feat** | A new feature | `feat(api): add screenshot streaming` |
+| **fix** | A bug fix | `fix(web): resolve login redirect issue` |
+| **docs** | Documentation changes | `docs: update setup instructions` |
+| **style** | Formatting, missing semi-colons, etc. | `style: lint check fix` |
+| **refactor** | Code change that neither fixes a bug nor adds a feature | `refactor: modularize browser service` |
+| **perf** | Code change that improves performance | `perf: optimized Gemini vision requests` |
+| **test** | Adding or correcting tests | `test: add unit tests for agent logic` |
+| **chore** | Build scripts, dependencies, CI etc. | `chore: update playwright to v1.42` |
+| **revert** | Reverting a previous commit | `revert: feat: add experimental feature` |
+
+**Scopes:**
+- `api` - Python FastAPI backend changes
+- `web` - Next.js frontend changes
+- `cli` - TypeScript CLI tool changes
+- `core` - Shared logic/config across packages
+- `ci`, `dx` - CI/CD or developer experience
+
+**Rules:**
+1.  **Subject**: Use imperative tense ("add", not "added"). Don't capitalize. No period at the end. Keep under 50 characters.
+2.  **Body**: Explain the "what" and "why", not the "how".
+3.  **Breaking**: Use `!` after type/scope or `BREAKING CHANGE:` footer.
 
 ## Tool Usage for Agents
 - **Browser Tool**: Use it to verify UI changes in development.
