@@ -3,7 +3,7 @@ import * as p from '@clack/prompts';
 import color from 'picocolors';
 import { AgentRunner } from '@tendo/agent';
 import type { TestResult } from '@tendo/core';
-import { getAgentConfig } from '../agent/config.js';
+import { createProvider } from '../agent/config.js';
 
 export const testCommand = new Command()
   .name('test')
@@ -16,9 +16,11 @@ export const testCommand = new Command()
   .action(async (url: string, options) => {
     p.intro(color.bgCyan(color.black(' Tendo QA Agent ')));
 
-    const config = getAgentConfig();
-    if (!config.apiKey) {
-      p.log.error(color.red('Error: API key is required'));
+    let provider;
+    try {
+      provider = createProvider();
+    } catch (error) {
+      p.log.error(color.red((error as Error).message));
       p.outro('Test aborted.');
       process.exit(1);
     }
@@ -29,7 +31,7 @@ export const testCommand = new Command()
     const [w, h] = options.viewport.split(',').map(Number);
     const viewport = { width: w || 1920, height: h || 1080 };
 
-    const runner = new AgentRunner(config);
+    const runner = new AgentRunner(provider);
     const s = p.spinner();
 
     runner.on('init', () => {

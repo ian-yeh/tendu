@@ -45,23 +45,28 @@ export class PageInteractor {
     return this.page.evaluate(() => {
       const elements: string[] = [];
       const selectors = [
-        'button', 'a', 'input[type="text"]', 'input[type="email"]',
-        'input[type="password"]', 'input[type="search"]', 'textarea',
+        'button', 'a', 'input', 'textarea',
         'select', '[role="button"]', '[role="link"]', '[role="textbox"]',
+        '[role="checkbox"]', '[role="tab"]', '[role="menuitem"]',
         '[data-testid]', '[data-test]', '[class*="btn"]', '[class*="button"]',
       ];
 
-      document.querySelectorAll(selectors.join(',')).forEach((el, idx) => {
+      const seen = new Set<Element>();
+      document.querySelectorAll(selectors.join(',')).forEach((el) => {
+        if (seen.has(el)) return;
+        seen.add(el);
+
         const rect = el.getBoundingClientRect();
         if (rect.width > 0 && rect.height > 0 && rect.top < window.innerHeight) {
           const text = el.textContent?.trim().substring(0, 50) || el.getAttribute('placeholder') || '';
-          const type = el.tagName.toLowerCase();
+          const tag = el.tagName.toLowerCase();
           const id = el.id ? `#${el.id}` : '';
-          const cls = el.className && typeof el.className === 'string' ? el.className.split(' ').slice(0, 2).join('.') : '';
-          elements.push(`[${idx}] ${type}${id} ${cls}: "${text}"`);
+          const cx = Math.round(rect.x + rect.width / 2);
+          const cy = Math.round(rect.y + rect.height / 2);
+          elements.push(`[${elements.length}] ${tag}${id} "${text}" @ center=(${cx}, ${cy})`);
         }
       });
-      return elements.slice(0, 30);
+      return elements.slice(0, 40);
     });
   }
 

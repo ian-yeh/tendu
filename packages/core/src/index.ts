@@ -1,5 +1,6 @@
 import type { Page } from 'playwright';
 export * from './Logger.js';
+export * from './LLMProvider.js';
 
 // ── Agent Configuration ──────────────────────────────────────────────
 

@@ -7,7 +7,7 @@ export class PromptEngine {
     actionHistory: string[],
     remainingSteps: number,
   ): string {
-    return `You are an autonomous QA testing agent that interacts with web pages using VISUAL PERCEPTION. You look at a screenshot and decide where to click by identifying pixel coordinates — you do NOT use CSS selectors or DOM queries.
+    return `You are an autonomous QA testing agent that interacts with web pages. You analyze a screenshot AND a list of detected elements (with exact center coordinates) to decide the next action.
 
 **USER'S INSTRUCTION:**
 "${instruction}"
@@ -15,47 +15,43 @@ export class PromptEngine {
 **CURRENT STATE:**
 - Page Title: ${context.pageTitle}
 - URL: ${context.currentUrl}
-- Viewport: 1920×1080
 - Remaining Steps: ${remainingSteps}
 
-**VISIBLE ELEMENTS (supplementary context):**
+**DETECTED ELEMENTS (with exact coordinates):**
 ${context.visibleElements.join('\n') || 'No interactive elements detected via DOM scan'}
 
 **ACTION HISTORY:**
 ${actionHistory.length === 0 ? 'No actions taken yet.' : actionHistory.map((a, i) => `${i + 1}. ${a}`).join('\n')}
 
 **INSTRUCTIONS:**
-1. Study the screenshot carefully to understand what is visible on screen
-2. Identify the element you need to interact with by its visual appearance and position
-3. Estimate the CENTER (x, y) pixel coordinates of that element in the screenshot
-4. Choose ONE action from: click, type, scroll, wait, navigate, done, fail
+1. Look at the screenshot to understand the current visual state
+2. Use the DETECTED ELEMENTS list to find the target element — it provides EXACT center coordinates
+3. Choose ONE action from: click, type, scroll, wait, navigate, done, fail
 
 **ACTION GUIDELINES:**
-- click: You MUST provide the "x" and "y" center pixel coordinates of the element you want to click.
-- type: You MUST provide the "x" and "y" center pixel coordinates of the input field, plus the "text" to type. The field will be clicked first, then the text will be entered.
+- click: Provide "x" and "y" coordinates. USE the center coordinates from the DETECTED ELEMENTS list.
+- type: Provide "x" and "y" coordinates of the input field, plus "text" to type. USE the center coordinates from the DETECTED ELEMENTS list.
 - scroll: Specify direction (up/down/left/right) and amount in pixels
 - wait: Use when the page is loading or needs time to settle
 - navigate: Provide a full URL to navigate to
-- done: Use when the task is fully and successfully completed. Include a reason summarizing the result
+- done: Use when the task is fully and successfully completed. Include a reason.
 - fail: Use only when the task genuinely cannot be completed
 
 **COORDINATE RULES:**
-- The screenshot is exactly 1920×1080 pixels
+- ALWAYS prefer coordinates from the DETECTED ELEMENTS list — they are exact and reliable
+- Only estimate coordinates visually if the target element is NOT in the list
 - (0, 0) is the top-left corner
-- Estimate the CENTER of the target element, not its edge
-- Be precise — a click at the wrong coordinates will miss the target
-- If you can't complete the task after reasonable attempts, use "fail"
 
 **OUTPUT FORMAT:**
-You must return a valid JSON object containing exactly two keys: "thought" (your reasoning) and "action" (the action object). Do not include any markdown formatting or conversational text outside of the JSON block.
+Return a valid JSON object containing exactly two keys: "thought" (your reasoning) and "action" (the action object). No markdown formatting or extra text.
 
 Example:
 {
-  "thought": "I need to add a todo, so I will click the input field.",
+  "thought": "I see the input field in the elements list with center (1110, 163). I will type into it.",
   "action": {
     "type": "type",
-    "x": 500,
-    "y": 300,
+    "x": 1110,
+    "y": 163,
     "text": "Buy groceries"
   }
 }`;
